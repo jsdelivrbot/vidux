@@ -1,21 +1,48 @@
-import React from 'react';
+import _ from 'lodash';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-
+import YoutubeSearch from 'youtube-api-search'
 import SearchBar from './components/searchBar';
+import VideoList from './components/videoList';
+import VideoDetail from './components/videoDetail';
 
-// configs
 const YOUTUBE_API_KEY = 'AIzaSyA0sVM0KJKU_zMyUUMRHBKFRyP45cperMU';
 
+class App extends Component {
 
-// create new component, this should produce some HTML
-const App = () => {
-    return (
-        <div>
-            <h1>Hello!</h1>
-            <SearchBar />
-        </div>
-    );
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            videos: [],
+            selectedVideo: null
+        };
+
+        this.videoSearch("foo fighters")
+    }
+
+    videoSearch(term){
+        YoutubeSearch({
+            key: YOUTUBE_API_KEY,
+            term: term
+        }, (videos) => {
+            this.setState({videos: videos, selectedVideo: videos[0]})
+        });
+    }
+
+    render() {
+        let videoSearch = _.debounce( (term) => {this.videoSearch(term)}, 500 )
+        return (
+            <div>
+                <SearchBar onSearchTermChange={term => videoSearch(term)}/>
+                <VideoDetail video={this.state.selectedVideo}/>
+                <VideoList
+                    videos={this.state.videos}
+                    onVideoSelect={selectedVideo => this.setState({selectedVideo})}/>
+            </div>
+        );
+    }
 }
 
-// take this component's generated HTML and put it on the page
-ReactDOM.render(<App />, document.querySelector('.batman'));
+ReactDOM.render(
+    <App/>, document.querySelector('.batman'));
