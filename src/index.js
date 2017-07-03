@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import YoutubeSearch from 'youtube-api-search'
+import YoutubeSearch from './services/youtubeSearch'
 import SearchBar from './components/searchBar';
 import VideoList from './components/videoList';
 import VideoDetail from './components/videoDetail';
